@@ -79,8 +79,9 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		
 		try{
 			
-			const users = await this.userStore.getAll();
-			return apiResponse(res, STATUS_CODES.OK, responseMessage.USERS_FETCHED,  response , true , null)
+			const users: IUSER[] = await this.userStore.getAll();
+			return users;
+			// return apiResponse(res, STATUS_CODES.OK, responseMessage.USERS_FETCHED,  response , true , null)
 			
 	
 		}catch(e){

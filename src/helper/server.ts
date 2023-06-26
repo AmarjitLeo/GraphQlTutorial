@@ -37,6 +37,10 @@ export class Server {
     this.app.use(middleware)
   }
 
+  public getApp(): any {
+    return this.app
+  }
+
   public start(): void {
     this.app.listen(this.port, () => {
       console.log(`Server listening on port ${this.port}`);

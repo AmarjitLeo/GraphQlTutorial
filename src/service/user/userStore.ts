@@ -44,9 +44,10 @@ export default class UserStore {
 		}
 	}
 
-	public async getAll(): Promise<IUSER> {
+	public async getAll(): Promise<IUSER[]> {
 		try {
 			let users: any = await UserModel.find();
+			console.log(users , "i have reaced here!!")
 			return users;
 		} catch (e) {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());

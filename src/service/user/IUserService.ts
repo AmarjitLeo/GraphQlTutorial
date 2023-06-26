@@ -3,9 +3,9 @@ import { IResponse } from "../../utils/interface/common";
 import { Request } from "express";
 
 export interface IUserServiceAPI {
-	create(request: IRegisterUserRequest, response: IRegisterUserResponse);
-	getUsers(request: IGetAllUserRequest, response: IGetAllUserResponse);
-	getUserById(request: IGetUserRequest, response: IGetUserResponse);
+	create(request: IRegisterUserRequest, response: IRegisterUserResponse):any;
+	getUsers(request: IGetAllUserRequest, response: IGetAllUserResponse): any;
+	getUserById(request: IGetUserRequest, response: IGetUserResponse):any;
 	// deleteUser(request: IRegisterUserRequest, response: IRegisterUserResponse);
 	// updateUser(request: ILoginUserRequest, response: ILoginUserResponse);
 }
