@@ -37,16 +37,3 @@ const Schema = gql`
   `;
 
 export default Schema;
-//export this Schema so we can use it in our project
-
-// type Person {
-//   id: ID!
-//   name: String
-// }
-// #handle user commands
-// type Query {
-
-
-// getAllPeople: [Person] #will return multiple Person instances
-// getPerson(id: Int): Person #has an argument of 'id' of type Integer.
-// }

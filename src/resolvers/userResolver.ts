@@ -24,9 +24,6 @@ const Resolvers = {
       return await UserModel.find()
     },
     getUser: async (_: any, args: any) => {
-      console.log(args, "i have id heerere!!");
-
-      // console.log({_id: _id},"obj")
       return await UserModel.findOne({ _id: args.id })
     }
   },
@@ -48,29 +45,23 @@ const Resolvers = {
       newPerson._id = JSON.stringify(user._id)
       return newPerson; //return the new object's result
     },
-
     updateUser: async (_: any, args: any) => {
       let payload: UpdateUserPayload = args.data;
-      console.log(payload, "Payload.....")
       if (!args.data.id) {
         return null
       }
-
-      console.log(payload, "payload after")
       let updatepayload: User = {
         firstname: payload.firstname,
         email: payload.email,
         password: payload.password,
         lastname: payload.lastname,
       }
-
       await UserModel.findOneAndUpdate({ _id: args.data.id }, updatepayload)
       updatepayload._id = args.data.id;
       return updatepayload
     },
     deleteUser: async (_: any, args: any) => {
       let payload: UpdateUserPayload = args.id;
-      console.log(payload, "payload after")
       await UserModel.findOneAndDelete({ _id: args.data.id })
       return args.id
     }
