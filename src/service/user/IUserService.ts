@@ -8,6 +8,7 @@ export interface IUserServiceAPI {
 	getUser(payload: IGetUserPayload): any;
 	deleteUser(request: IDeleteUserPayload): any;
 	updateUser(payload: IUpdateUserPayload): any;
+	loginUser(payload: ILoginPayload): any;
 }
 
 /********************************************************************************
@@ -91,5 +92,14 @@ export interface IDeleteUserPayload extends Request {
 	id: string
 }
 export interface IDeleteUserResponse extends IResponse {
+	user?: IUSER;
+}
+
+export interface ILoginPayload {
+	email: string,
+	password: string
+}
+export interface ILoginResponse extends IResponse {
+	token?: string;
 	user?: IUSER;
 }

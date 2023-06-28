@@ -7,7 +7,11 @@ import responseMessage from "../../utils/enum/responseMessage";
 import * as IUserService from "./IUserService";
 import { IAppServiceProxy } from "../appServiceProxy";
 import { toError } from "../../utils/interface/common";
-import { apiResponse } from "../../helper/apiResonse"
+import { apiResponse } from "../../helper/apiResonse";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default class UserService implements IUserService.IUserServiceAPI {
 	private userStore = new UserStore();
@@ -16,6 +20,14 @@ export default class UserService implements IUserService.IUserServiceAPI {
 	constructor(proxy: IAppServiceProxy) {
 		this.proxy = proxy;
 	}
+
+	private generateJWT = (user: IUSER): string => {
+		const payLoad = {
+		  id: user.id,
+		  email: user.email,
+		};
+		return jwt.sign(payLoad, process.env.JWT_SECRET);
+	  };
 
 	public create = async (payload: IUserService.IRegisterUserPayload) => {
 		const response: IUserService.IRegisterUserResponse = {
@@ -53,22 +65,21 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		}
 
 		let user: IUSER;
-		const attributes: IUSER = {
-			firstname,
-			lastname,
-			email: email.toLowerCase(),
-			password,
-			age
-		};
-
 		try {
+			const hashPassword = await bcrypt.hash(password, 10);
+			const attributes: IUSER = {
+				firstname,
+				lastname,
+				email: email.toLowerCase(),
+				password: hashPassword,
+				age
+			};
 			user = await this.userStore.createUser(attributes);
+			return apiResponse(STATUS_CODES.OK, responseMessage.USER_CREATED, user, true, null)
 		} catch (e) {
 			console.error(e);
 			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, null, false, toError(e.message));
 		}
-		return apiResponse(STATUS_CODES.OK, responseMessage.USER_CREATED, user, true, null)
-
 	};
 
 	public updateUser = async (payload: IUserService.IUpdateUserPayload) => {
@@ -170,6 +181,39 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		try {
 			user = await this.userStore.getById(payload.id);
 			return apiResponse(STATUS_CODES.OK, responseMessage.USER_FETCHED, user, true, null);
+		} catch (e) {
+			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, null, false, toError(e.message));
+		}
+	};
+
+	// loginUser
+	public loginUser = async (payload: IUserService.ILoginPayload) => {
+		const {email , password} = payload;
+		const response: IUserService.ILoginResponse = {
+			statusCode: STATUS_CODES.UNKNOWN_CODE,
+			message: null,
+			data: null,
+			status: false
+		};
+		let user: IUSER;
+		try {
+			user = await this.userStore.getByEmail(payload.email);
+			if(!user){
+				return  apiResponse(STATUS_CODES.BAD_REQUEST, ErrorMessageEnum.USER_NOT_EXIST, null, false, toError(ErrorMessageEnum.USER_NOT_EXIST));
+			}	
+			const isValid = await bcrypt.compare(password, user?.password);
+
+			//if isValid or user.password is null
+			if (!isValid || !user?.password) {
+			  const errorMsg = ErrorMessageEnum.INVALID_CREDENTIALS;
+			  response.statusCode = STATUS_CODES.UNAUTHORIZED;
+			  response.error = toError(errorMsg);
+			  return response;
+			}
+			response.statusCode = STATUS_CODES.OK;
+			response.token = this.generateJWT(user);
+			response.user = user;
+			return apiResponse(STATUS_CODES.OK, responseMessage.USER_FETCHED, response, true, null);
 		} catch (e) {
 			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, null, false, toError(e.message));
 		}

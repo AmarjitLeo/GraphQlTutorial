@@ -12,11 +12,11 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import typeDefs from "../schema/userSchema";
 import resolvers from "../resolvers/userResolver";
 import { json } from 'body-parser';
+import  { extractBearerToken } from "../utils/auth/userAuth"
 
 interface MyContext {
   token?: String;
 }
-
 
 dotenv.config();
 export class Server {
@@ -61,22 +61,15 @@ export class Server {
       plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     });
     await server.start();
-
+    
     this.app.use(
       '/graphql',
       cors<cors.CorsRequest>(),
       json(),
       expressMiddleware(server, {
         context: async ({ req, res }) => {
-          // Get the user token from the headers.
-          const token = req.headers.authorization || '';
-      
-          // Try to retrieve a user with the token
-          // const user = await getUser(token);
-      
-          // Add the user to the context
-          // return { user };
-          return "user token!"
+          console.log(req.headers.authorization)
+          return extractBearerToken(req)
         },
       }),
     );

@@ -1,8 +1,4 @@
 import { gql } from "apollo-server-express"; //will create a schema
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import userResolver from "../resolvers/userResolver"
-import { merge } from "lodash";
-
 const typeDefs = gql`
   type User {
     _id: String!,
@@ -11,6 +7,10 @@ const typeDefs = gql`
     email: String,
     password: String,
     age: Int
+  }
+  type Login {
+    token: String!
+    user: User
   }
   type Query{ 
     getAllUsers: [User],
@@ -39,14 +39,8 @@ const typeDefs = gql`
     registerUser(data: UserProps): User,
     updateUser(id: String,data: UserUpdateProps): User
     deleteUser(id: String): User
+    loginUser(email: String,password: String): Login
   }
   `;
-
-// export const resolvers = merge(userResolver);
-
-// export const executableSchema = makeExecutableSchema({
-//   resolvers: { ...resolvers },
-//   typeDefs
-// });
 
 export default typeDefs;

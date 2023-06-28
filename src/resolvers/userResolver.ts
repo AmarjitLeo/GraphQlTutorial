@@ -2,6 +2,7 @@ import proxy from "../service/appServiceProxy";
 import { ApolloError } from "apollo-server-express";
 import STATUS_CODES from "../utils/enum/statusCodes"
 import * as IUserService from "../service/user/IUserService"
+import authenticate from "../utils/auth/userAuth"
 
 type User = {
   _id?: String,
@@ -21,7 +22,8 @@ type UpdateUserPayload = {
 
 const resolvers = {
   Query: {
-    getAllUsers: async () => {
+    getAllUsers: async (_: any, args: any, contextValue: any) => {
+      let user: any = authenticate(contextValue.token)
       let response: IUserService.IGetAllUserResponse;
       try {
         response = await proxy.user.getUsers()
@@ -30,7 +32,8 @@ const resolvers = {
         throw e;
       }
     },
-    getUser: async (_: any, args: any) => {
+    getUser: async (_: any, args: any, contextValue: any) => {
+      let user: any = authenticate(contextValue.token)
       let response: IUserService.IGetAllUserResponse;
       try {
         response = await proxy.user.getUser(args)
@@ -41,7 +44,8 @@ const resolvers = {
     }
   },
   Mutation: {
-    async registerUser(parent: any, args: any) {
+    async registerUser(parent: any, args: any, contextValue: any) {
+      let user: any = authenticate(contextValue.token)
       const payload: IUserService.IRegisterUserPayload = args.data;
       let response: IUserService.IRegisterUserResponse;
       try {
@@ -57,7 +61,8 @@ const resolvers = {
       }
       return response.data;
     },
-    updateUser: async (_: any, args: any) => {
+    updateUser: async (_: any, args: any, contextValue: any) => {
+      let user: any = authenticate(contextValue.token)
       const payload: UpdateUserPayload = args.data;
       let response: IUserService.IUpdateUserResponse;
       try {
@@ -74,11 +79,22 @@ const resolvers = {
       }
       return response.data;
     },
-    deleteUser: async (_: any, args: any) => {
+    deleteUser: async (_: any, args: any, contextValue: any) => {
+      let user: any = authenticate(contextValue.token)
       try {
         let payload: IUserService.IDeleteUserPayload = args;
         let response: IUserService.IDeleteUserResponse;
         response = await await proxy.user.deleteUser(payload);
+        return response.data
+      } catch (e) {
+        throw e;
+      }
+    },
+    loginUser: async (_: any, args: any) => {
+      try {
+        let payload: IUserService.ILoginPayload = args;
+        let response: IUserService.ILoginResponse;
+        response = await await proxy.user.loginUser(payload);
         return response.data
       } catch (e) {
         throw e;

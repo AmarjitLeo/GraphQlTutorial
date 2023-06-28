@@ -1,7 +1,6 @@
 import { Server } from './helper/server';
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
-
 dotenv.config();
 const Port = process.env.PORT;
 const server = new Server(Number(Port));
