@@ -1,7 +1,6 @@
 import proxy from "../service/appServiceProxy";
 import { ApolloError } from "apollo-server-express";
 import STATUS_CODES from "../utils/enum/statusCodes"
-import { UserModel } from "../db/users";
 import * as IUserService from "../service/user/IUserService"
 
 type User = {
@@ -23,10 +22,22 @@ type UpdateUserPayload = {
 const resolvers = {
   Query: {
     getAllUsers: async () => {
-      return await UserModel.find()
+      let response: IUserService.IGetAllUserResponse;
+      try {
+        response = await proxy.user.getUsers()
+        return response.data;
+      } catch (e) {
+        throw e;
+      }
     },
     getUser: async (_: any, args: any) => {
-      return await UserModel.findOne({ _id: args.id })
+      let response: IUserService.IGetAllUserResponse;
+      try {
+        response = await proxy.user.getUser(args)
+        return response.data;
+      } catch (e) {
+        throw e;
+      }
     }
   },
   Mutation: {

@@ -7,7 +7,7 @@ enum ErrorMessageEnum {
 	INTERNAL_ERROR = "Internal server Error",
 	REQUEST_PARAMS_ERROR = "Something Wrong In Req Params!",
 	USER_NOT_EXIST = "User not exists!",
-	
+
 }
 
 export default ErrorMessageEnum;

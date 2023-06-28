@@ -103,7 +103,6 @@ export default class UserService implements IUserService.IUserServiceAPI {
 			console.error(params.error);
 			return apiResponse(STATUS_CODES.UNPROCESSABLE_ENTITY, ErrorMessageEnum.REQUEST_PARAMS_ERROR, response, false, params.error);
 		}
-		const { ...rest } = params.value;
 		let existingUser: IUSER;
 		try {
 			existingUser = await this.userStore.getById(payload.id);
@@ -150,133 +149,29 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		}
 	};
 
-	// public getUsers = async () => {
-	// 	console.log("i m here in get users funxtuon!!!")
-	// }
-	// public getUsers = async (
-	// 	request: IUserService.IGetAllUserRequest,
-	// 	res: IUserService.IGetAllUserResponse,
-	// ) => {
-	// 	const response: IUserService.IRegisterUserResponse = {
-	// 		status: STATUS_CODES.UNKNOWN_CODE,
-	// 	};
+	public getUsers = async () => {
+		const response: IUserService.IGetAllUserResponse = {
+			statusCode: STATUS_CODES.UNKNOWN_CODE,
+			message: null,
+			data: null,
+			status: false
+		};
+		let users: IUSER[];
+		try {
+			users = await this.userStore.getAll();
+			return apiResponse(STATUS_CODES.OK, responseMessage.USERS_FETCHED, users, true, null);
+		} catch (e) {
+			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, null, false, toError(e.message));
+		}
+	};
 
-	// 	try{
-
-	// 		const users: IUSER[] = await this.userStore.getAll();
-	// 		return users;
-	// 		// return apiResponse(res, STATUS_CODES.OK, responseMessage.USERS_FETCHED,  response , true , null)
-
-
-	// 	}catch(e){
-	// 		console.log(e)
-
-	// 		return apiResponse(res, STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR,  response , false , toError(e.message))
-	// 		// return apiResponse(res, STATUS_CODES.OK, responseMessage.USER_CREATED,  response , true , null)
-
-	// 		// await apiResponse(res, 500, "internal error in api!", null , false, error)
-	// 	}
-	// }
-
-	/**
-	 * User login
-	 */
-	// public login = async (
-	// 	request: IUserService.ILoginUserRequest,
-	// 	res: IUserService.ILoginUserResponse,
-	// ) => {
-	// 	const response: IUserService.ILoginUserResponse = {
-	// 		status: STATUS_CODES.UNKNOWN_CODE,
-	// 	};
-	// 	const schema = Joi.object().keys({
-	// 		email: Joi.string().email().required(),
-	// 		password: Joi.string().required(),
-	// 	});
-	// 	const params = schema.validate(request.body);
-
-	// 	if (params.error) {
-	// 		console.error(params.error);
-	// 		response.status = STATUS_CODES.UNPROCESSABLE_ENTITY;
-	// 		response.error = toError(params.error.details[0].message);
-	// 		return apiResponse(res, response);
-	// 	}
-	// 	const { email, password } = params.value;
-	// 	let user: IUSER;
-	// 	try {
-	// 		//get user bu email id to check it exist or not
-	// 		user = await this.userStore.getByEmail(email);
-	// 		//if credentials are incorrect
-	// 		if (!user) {
-	// 			response.status = STATUS_CODES.UNAUTHORIZED;
-	// 			response.error = toError(ErrorMessageEnum.INVALID_CREDENTIALS);
-	// 			return apiResponse(res, response);
-	// 		}
-	// 	} catch (e) {
-	// 		console.error(e);
-	// 		response.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-	// 		response.error = toError(e.message);
-	// 		return apiResponse(res, response);
-	// 	}
-
-	// 	//comparing password to insure that password is correct
-	// 	const isValid = await bcrypt.compare(password, user?.password);
-
-	// 	//if isValid or user.password is null
-	// 	if (!isValid || !user?.password) {
-	// 		response.status = STATUS_CODES.UNAUTHORIZED;
-	// 		response.error = toError(ErrorMessageEnum.INVALID_CREDENTIALS);
-	// 		return apiResponse(res, response);
-	// 	}
-	// 	response.status = STATUS_CODES.OK;
-	// 	response.token = this.generateJWT(user);
-	// 	response.user = user;
-	// 	return apiResponse(res, response);
-	// };
-
-	/**
-	 * Get user by Id
-	 */
-	// 	public getUserById = async (
-	// 		request: IUserService.IGetUserRequest,
-	// 		res: IUserService.IGetUserResponse,
-	// 	) => {
-	// 		const response: IUserService.IGetUserResponse = {
-	// 			status: STATUS_CODES.UNKNOWN_CODE,
-	// 		};
-
-	// 		const schema = Joi.object().keys({
-	// 			id: Joi.string().required(),
-	// 		});
-
-	// 		const params = schema.validate(request.params);
-
-	// 		if (params.error) {
-	// 			console.error(params.error);
-	// 			response.status = STATUS_CODES.UNPROCESSABLE_ENTITY;
-	// 			response.error = toError(params.error.details[0].message); 
-	// 			return apiResponse(res, STATUS_CODES.UNPROCESSABLE_ENTITY, ErrorMessageEnum.REQUEST_PARAMS_ERROR,  response , false , toError(params.error.details[0].message))
-	// 		}
-	// 		const { id } = params.value;
-	// 		let user: IUSER;
-	// 		try {
-	// 			user = await this.userStore.getById(id);
-
-	// 			//if user's id is incorrect
-	// 			if (!user) {
-	// 				response.status = STATUS_CODES.BAD_REQUEST;
-	// 				response.error = toError(ErrorMessageEnum.INVALID_USER_ID);
-	// 				return apiResponse(res, STATUS_CODES.BAD_REQUEST, responseMessage.RECORD_NOT_FOUND,  response , false , toError(ErrorMessageEnum.INVALID_USER_ID))
-	// 				// apiResponse(res, response);
-	// 			}
-	// 		} catch (e) {
-	// 			console.error(e);
-	// 			response.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-	// 			response.error = toError(e.message);
-	// 			return apiResponse(res, STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR,  response , false , toError(e.message))
-
-	// 		}
-	// 		response.status = STATUS_CODES.OK;
-	// 		response.user = user;
-	// 		return apiResponse(res, STATUS_CODES.OK, responseMessage.USERS_FETCHED,  response , true , null)
-	// 	};
+	public getUser = async (payload: IUserService.IGetUserPayload) => {
+		let user: IUSER;
+		try {
+			user = await this.userStore.getById(payload.id);
+			return apiResponse(STATUS_CODES.OK, responseMessage.USER_FETCHED, user, true, null);
+		} catch (e) {
+			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, null, false, toError(e.message));
+		}
+	};
 }

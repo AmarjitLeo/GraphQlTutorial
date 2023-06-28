@@ -9,7 +9,8 @@ enum ReponseMessageEnum {
 	INVALID_CREDENTIALS = " Invalid credentials",
 	EMAIL_ALREADY_EXIST = "Email Already Exist",
 	INVALID_UUID = "Invalid UUID",
-    USERS_FETCHED = "All Users Fetched Successfully!"
+	USERS_FETCHED = "All Users Fetched Successfully!",
+	USER_FETCHED = "User Fetched Successfully!"
 }
 
 export default ReponseMessageEnum;

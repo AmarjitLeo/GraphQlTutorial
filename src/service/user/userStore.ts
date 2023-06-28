@@ -1,6 +1,5 @@
-import { User as IUSER }from "../../utils/interface/IUser";
+import { User as IUSER } from "../../utils/interface/IUser";
 import { UserModel } from "../../db/users";
-import { response } from "express";
 
 export default class UserStore {
 	public static OPERATION_UNSUCCESSFUL = class extends Error {
@@ -14,7 +13,7 @@ export default class UserStore {
 	 */
 	public async createUser(userInput: IUSER): Promise<IUSER> {
 		try {
-			let savedUser:any = await UserModel.create(userInput);
+			let savedUser: any = await UserModel.create(userInput);
 			return savedUser;
 		} catch (error) {
 			return error;
@@ -38,7 +37,7 @@ export default class UserStore {
 	 */
 	public async getById(id: string): Promise<IUSER> {
 		try {
-			let user: any = await UserModel.findOne({_id : id});
+			let user: any = await UserModel.findOne({ _id: id });
 			return user;
 		} catch (e) {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
@@ -48,18 +47,16 @@ export default class UserStore {
 	public async getAll(): Promise<IUSER[]> {
 		try {
 			let users: any = await UserModel.find();
-			console.log(users , "i have reaced here!!")
 			return users;
 		} catch (e) {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
 		}
 	}
 
-
-	public async updateUserById(id: string , payload: any): Promise<IUSER> {
+	public async updateUserById(id: string, payload: any): Promise<IUSER> {
 		try {
-			await UserModel.findOneAndUpdate({_id: id}, payload);
-			return await UserModel.findOne({_id: id});
+			await UserModel.findOneAndUpdate({ _id: id }, payload);
+			return await UserModel.findOne({ _id: id });
 
 		} catch (e) {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
@@ -68,7 +65,7 @@ export default class UserStore {
 
 	public async deleteUserById(id: string): Promise<IUSER> {
 		try {
-			return await UserModel.findOneAndDelete({_id: id});
+			return await UserModel.findOneAndDelete({ _id: id });
 		} catch (e) {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
 		}

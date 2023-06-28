@@ -55,8 +55,6 @@ export class Server {
 
   public async start(): Promise<void> {
     const httpServer = http.createServer(this.app);
-
-
     const server = new ApolloServer<MyContext>({
       typeDefs,
       resolvers,
@@ -69,7 +67,17 @@ export class Server {
       cors<cors.CorsRequest>(),
       json(),
       expressMiddleware(server, {
-        context: async ({ req }) => ({ token: req.headers.token }),
+        context: async ({ req, res }) => {
+          // Get the user token from the headers.
+          const token = req.headers.authorization || '';
+      
+          // Try to retrieve a user with the token
+          // const user = await getUser(token);
+      
+          // Add the user to the context
+          // return { user };
+          return "user token!"
+        },
       }),
     );
     
