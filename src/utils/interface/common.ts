@@ -2,8 +2,12 @@ import StatusCodeEnum from "../enum/statusCodes";
 import ErrorMessageEnum from "../enum/errorMessage";
 
 export interface IResponse {
-	status: StatusCodeEnum;
 	error?: IError;
+	statusCode: StatusCodeEnum;
+	message: string;
+	data: any
+	status: boolean;
+
 }
 
 export interface IError {

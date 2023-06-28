@@ -5,7 +5,9 @@ enum ErrorMessageEnum {
 	INVALID_EMAIL_OR_CODE = "Invalid Email or Code!!",
 	EMAIL_ALREADY_EXIST = "Email Already Exist",
 	INTERNAL_ERROR = "Internal server Error",
-	REQUEST_PARAMS_ERROR = "Something Wrong In Req Params!"
+	REQUEST_PARAMS_ERROR = "Something Wrong In Req Params!",
+	USER_NOT_EXIST = "User not exists!",
+	
 }
 
 export default ErrorMessageEnum;

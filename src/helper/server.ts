@@ -1,10 +1,22 @@
 import express, { Application, Request, Response } from 'express';
+import http from 'http';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compression from "compression";
 import cors from 'cors';
 import routes from "../routes/index";
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import typeDefs from "../schema/userSchema";
+import resolvers from "../resolvers/userResolver";
+import { json } from 'body-parser';
+
+interface MyContext {
+  token?: String;
+}
+
 
 dotenv.config();
 export class Server {
@@ -41,10 +53,28 @@ export class Server {
     return this.app
   }
 
-  public start(): void {
-    this.app.listen(this.port, () => {
-      console.log(`Server listening on port ${this.port}`);
+  public async start(): Promise<void> {
+    const httpServer = http.createServer(this.app);
+
+
+    const server = new ApolloServer<MyContext>({
+      typeDefs,
+      resolvers,
+      plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     });
+    await server.start();
+
+    this.app.use(
+      '/graphql',
+      cors<cors.CorsRequest>(),
+      json(),
+      expressMiddleware(server, {
+        context: async ({ req }) => ({ token: req.headers.token }),
+      }),
+    );
+    
+    await new Promise<void>((resolve) => httpServer.listen({ port: this.port }, resolve));
+    console.log(`🚀 Server ready at http://localhost:${this.port}`);
+    console.log(`🚀 Graphql Server ready at http://localhost:${this.port}/graphql`);
   }
 }
-

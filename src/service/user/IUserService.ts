@@ -1,29 +1,45 @@
-import IUSER from "../../utils/interface/IUser";
+import {User as IUSER ,UpdateUser as IUPDATEUSER } from "../../utils/interface/IUser";
 import { IResponse } from "../../utils/interface/common";
 import { Request } from "express";
 
 export interface IUserServiceAPI {
-	create(request: IRegisterUserRequest, response: IRegisterUserResponse):any;
-	getUsers(request: IGetAllUserRequest, response: IGetAllUserResponse): any;
-	getUserById(request: IGetUserRequest, response: IGetUserResponse):any;
-	// deleteUser(request: IRegisterUserRequest, response: IRegisterUserResponse);
-	// updateUser(request: ILoginUserRequest, response: ILoginUserResponse);
+	create(payload: IRegisterUserPayload):any;
+	// getUsers(): any;
+	// getUserById():any;
+	deleteUser(request: IDeleteUserPayload):any;
+	updateUser(payload: IUpdateUserPayload): any;
 }
 
 /********************************************************************************
  *  Create user
  ********************************************************************************/
-export interface IRegisterUserRequest extends Request {
-	body: {
-		name: string;
-		age: number;
-		email: string;
-		password: string;
+export interface IRegisterUserPayload {
+	firstname: string;
+	lastname: string;
+	email: string;
+	password: string;
+	age: number;
+}
+
+
+export interface IUpdateUserPayload {
+	id: string,
+	data: {
+	firstname?: string;
+	lastname?: string;
+	email?: string;
+	password?: string;
+	age?: number;
 	}
 }
 
+
 export interface IRegisterUserResponse extends IResponse {
 	user?: IUSER;
+}
+
+export interface IUpdateUserResponse extends IResponse {
+	user?: IUPDATEUSER;
 }
 
 /********************************************************************************
@@ -62,4 +78,12 @@ export interface IGetAllUserRequest extends Request {
 }
 export interface IGetAllUserResponse extends IResponse {
 	users?: IUSER[];
+}
+
+
+export interface IDeleteUserPayload extends Request {
+	id: string
+}
+export interface IDeleteUserResponse extends IResponse {
+	user?: IUSER;
 }

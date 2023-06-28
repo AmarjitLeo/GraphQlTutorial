@@ -1,13 +1,15 @@
 import proxy from "../service/appServiceProxy";
+import { ApolloError } from "apollo-server-express";
+import STATUS_CODES from "../utils/enum/statusCodes"
 import { UserModel } from "../db/users";
+import * as IUserService from "../service/user/IUserService"
 
 type User = {
-  _id?: string,
-  firstname: string,
-  lastname: string,
-  email: string,
+  _id?: String,
+  firstname: String,
+  lastname: String,
+  email: String,
   password: string
-
 }
 
 type UpdateUserPayload = {
@@ -18,7 +20,7 @@ type UpdateUserPayload = {
   password?: string
 }
 
-const Resolvers = {
+const resolvers = {
   Query: {
     getAllUsers: async () => {
       return await UserModel.find()
@@ -28,44 +30,50 @@ const Resolvers = {
     }
   },
   Mutation: {
-    addUser: async (_: any, args: any) => {
-      const newPerson: User = {
-        firstname: args.data.firstname,
-        lastname: args.data.lastname,
-        email: args.data.email,
-        password: args.data.password
-      };
-      // people.push(newPerson);
-
-      let user = await UserModel.findOne({ email: newPerson.email })
-      if (user) {
-        return null
+    async registerUser(parent: any, args: any) {
+      const payload: IUserService.IRegisterUserPayload = args.data;
+      let response: IUserService.IRegisterUserResponse;
+      try {
+        response = await proxy.user.create(payload);
+        if (response.statusCode !== STATUS_CODES.OK) {
+          throw new ApolloError(
+            response.error?.message,
+            response.status.toString()
+          );
+        }
+      } catch (e) {
+        throw e;
       }
-      user = await UserModel.create(newPerson);
-      newPerson._id = JSON.stringify(user._id)
-      return newPerson; //return the new object's result
+      return response.data;
     },
     updateUser: async (_: any, args: any) => {
-      let payload: UpdateUserPayload = args.data;
-      if (!args.data.id) {
-        return null
+      const payload: UpdateUserPayload = args.data;
+      let response: IUserService.IUpdateUserResponse;
+      try {
+        let { id, ...rest } = payload
+        response = await proxy.user.updateUser({ id: args.id, data: payload });
+        if (response.statusCode !== STATUS_CODES.OK) {
+          throw new ApolloError(
+            response.error?.message,
+            response.status.toString()
+          );
+        }
+      } catch (e) {
+        throw e;
       }
-      let updatepayload: User = {
-        firstname: payload.firstname,
-        email: payload.email,
-        password: payload.password,
-        lastname: payload.lastname,
-      }
-      await UserModel.findOneAndUpdate({ _id: args.data.id }, updatepayload)
-      updatepayload._id = args.data.id;
-      return updatepayload
+      return response.data;
     },
     deleteUser: async (_: any, args: any) => {
-      let payload: UpdateUserPayload = args.id;
-      await UserModel.findOneAndDelete({ _id: args.data.id })
-      return args.id
+      try {
+        let payload: IUserService.IDeleteUserPayload = args;
+        let response: IUserService.IDeleteUserResponse;
+        response = await await proxy.user.deleteUser(payload);
+        return response.data
+      } catch (e) {
+        throw e;
+      }
     }
   }
 };
 
-export default Resolvers;
+export default resolvers;

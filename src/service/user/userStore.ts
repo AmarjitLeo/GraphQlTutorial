@@ -1,5 +1,6 @@
-import IUSER from "../../utils/interface/IUser";
+import { User as IUSER }from "../../utils/interface/IUser";
 import { UserModel } from "../../db/users";
+import { response } from "express";
 
 export default class UserStore {
 	public static OPERATION_UNSUCCESSFUL = class extends Error {
@@ -53,4 +54,24 @@ export default class UserStore {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
 		}
 	}
+
+
+	public async updateUserById(id: string , payload: any): Promise<IUSER> {
+		try {
+			await UserModel.findOneAndUpdate({_id: id}, payload);
+			return await UserModel.findOne({_id: id});
+
+		} catch (e) {
+			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
+		}
+	}
+
+	public async deleteUserById(id: string): Promise<IUSER> {
+		try {
+			return await UserModel.findOneAndDelete({_id: id});
+		} catch (e) {
+			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
+		}
+	}
+
 }

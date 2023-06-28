@@ -1,8 +1,6 @@
-import express from 'express';
 import { Server } from './helper/server';
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
-import { connectToGraphQl } from './helper/graphQl'
 
 dotenv.config();
 const Port = process.env.PORT;
@@ -11,6 +9,6 @@ server.start();
 
 mongoose.Promise = Promise
 mongoose.connect(process.env.MONGO_URL)
+console.log('====mongodb connected!====');
 mongoose.connection.on('error', (error: Error) => console.log(error))
 
-connectToGraphQl(server.getApp())
