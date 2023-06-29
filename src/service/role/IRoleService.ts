@@ -8,7 +8,7 @@ export interface IRoleServiceAPI {
 	getRole(payload: IGetRolePayload): any;
 	deleteRole(request: IDeleteRolePayload): any;
 	updateRole(payload: IUpdateRolePayload): any;
-    getByName(paylaod: IgetRoleByNamePayload): any
+	getByName(paylaod: IgetRoleByNamePayload): any
 }
 
 export interface ICreateRolePayload {
@@ -30,7 +30,7 @@ export interface IgetRoleByNameResponse extends IResponse {
 export interface IUpdateRolePayload {
 	id: string,
 	data: {
-		
+
 	}
 }
 

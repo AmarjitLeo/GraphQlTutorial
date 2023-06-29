@@ -11,9 +11,6 @@ export interface IUserServiceAPI {
 	loginUser(payload: ILoginPayload): any;
 }
 
-/********************************************************************************
- *  Create user
- ********************************************************************************/
 export interface IRegisterUserPayload {
 	firstname: string;
 	lastname: string;
@@ -22,7 +19,6 @@ export interface IRegisterUserPayload {
 	age: number;
 	role: string;
 }
-
 
 export interface IUpdateUserPayload {
 	id: string,
@@ -45,23 +41,6 @@ export interface IUpdateUserResponse extends IResponse {
 	user?: IUPDATEUSER;
 }
 
-/********************************************************************************
- * Login
- ********************************************************************************/
-// export interface ILoginUserRequest extends Request {
-// 	body: {
-// 		email: string;
-// 		password: string;
-// 	}
-// }
-// export interface ILoginUserResponse extends IResponse {
-// 	user?: IUSER;
-// }
-
-/********************************************************************************
- *  Get user
- ********************************************************************************/
-
 export interface IGetUserRequest extends Request {
 	params: {
 		id: string;
@@ -70,11 +49,6 @@ export interface IGetUserRequest extends Request {
 export interface IGetUserResponse extends IResponse {
 	user?: IUSER;
 }
-
-
-/********************************************************************************
- *  Get all user
- ********************************************************************************/
 
 export interface IGetAllUserRequest extends Request {
 

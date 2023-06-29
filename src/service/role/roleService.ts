@@ -20,7 +20,7 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 	}
 
 	public create = async (payload: IRoleService.ICreateRolePayload) => {
-		const response: IRoleService.ICreateRoleResponse= {
+		const response: IRoleService.ICreateRoleResponse = {
 			statusCode: STATUS_CODES.UNKNOWN_CODE,
 			status: false,
 			data: null,
@@ -52,7 +52,7 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 
 		let user: IROLE;
 		try {
-			user = await this.roleStore.createRole({role: role});
+			user = await this.roleStore.createRole({ role: role });
 			return apiResponse(STATUS_CODES.OK, responseMessage.USER_CREATED, user, true, null)
 		} catch (e) {
 			console.error(e);
@@ -60,8 +60,8 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 		}
 	};
 
-    public getRoles = async () => {
-        const response: IRoleService.IGetAllRoleResponse = {
+	public getRoles = async () => {
+		const response: IRoleService.IGetAllRoleResponse = {
 			statusCode: STATUS_CODES.UNKNOWN_CODE,
 			status: false,
 			data: null,
@@ -75,16 +75,16 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 		} catch (e) {
 			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, null, false, toError(e.message));
 		}
-    }
+	}
 
-    public getRole = async (payload: IRoleService.IGetRolePayload) => {
-        const response: IRoleService.IGetRoleResponse = {
+	public getRole = async (payload: IRoleService.IGetRolePayload) => {
+		const response: IRoleService.IGetRoleResponse = {
 			statusCode: STATUS_CODES.UNKNOWN_CODE,
 			status: false,
 			data: null,
 			message: ""
 		};
-        let role: IROLE;
+		let role: IROLE;
 		try {
 			role = await this.roleStore.getById(payload.id);
 			return apiResponse(STATUS_CODES.OK, responseMessage.ROLE_FETCHED, role, true, null);
@@ -95,8 +95,8 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 
 
 
-    public getByName = async (payload: IRoleService.IgetRoleByNamePayload) => {
-        const response: IRoleService.IgetRoleByNameResponse= {
+	public getByName = async (payload: IRoleService.IgetRoleByNamePayload) => {
+		const response: IRoleService.IgetRoleByNameResponse = {
 			statusCode: STATUS_CODES.UNKNOWN_CODE,
 			status: false,
 			data: null,
@@ -110,10 +110,10 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 			console.error(params.error);
 			return apiResponse(STATUS_CODES.UNPROCESSABLE_ENTITY, ErrorMessageEnum.REQUEST_PARAMS_ERROR, response, false, params.error);
 		}
-        console.log(payload , "roles apyload....")
+		console.log(payload, "roles apyload....")
 		const { role } = payload;
 
-        // Check if email is already registered
+		// Check if email is already registered
 		let existingRole: IROLE;
 		try {
 			existingRole = await this.roleStore.getByName(role);
@@ -126,8 +126,8 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 			console.error(e);
 			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, response, false, toError(e.message));
 		}
-        return apiResponse(STATUS_CODES.OK, responseMessage.USER_CREATED, existingRole, true, null)
-    }
+		return apiResponse(STATUS_CODES.OK, responseMessage.USER_CREATED, existingRole, true, null)
+	}
 
 	public updateRole = async (payload: IRoleService.IUpdateRolePayload) => {
 		const response: IRoleService.IUpdateRoleResponse = {
@@ -137,8 +137,8 @@ export default class RoleService implements IRoleService.IRoleServiceAPI {
 			status: false
 		};
 		const schema = Joi.object().keys({
-            role: Joi.string().required(),
-        });
+			role: Joi.string().required(),
+		});
 		const params = schema.validate(payload.data);
 		if (params.error) {
 			console.error(params.error);

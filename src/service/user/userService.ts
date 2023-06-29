@@ -24,11 +24,11 @@ export default class UserService implements IUserService.IUserServiceAPI {
 
 	private generateJWT = (user: IUSER): string => {
 		const payLoad = {
-		  id: user.id,
-		  email: user.email,
+			id: user.id,
+			email: user.email,
 		};
 		return jwt.sign(payLoad, process.env.JWT_SECRET);
-	  };
+	};
 
 	public create = async (payload: IUserService.IRegisterUserPayload) => {
 		const response: IUserService.IRegisterUserResponse = {
@@ -50,7 +50,7 @@ export default class UserService implements IUserService.IUserServiceAPI {
 			console.error(params.error);
 			return apiResponse(STATUS_CODES.UNPROCESSABLE_ENTITY, ErrorMessageEnum.REQUEST_PARAMS_ERROR, response, false, params.error);
 		}
-		const { firstname, lastname, email, password, age , role } = payload;
+		const { firstname, lastname, email, password, age, role } = payload;
 
 		// Check if email is already registered
 		let existingUser: IUSER;
@@ -65,11 +65,11 @@ export default class UserService implements IUserService.IUserServiceAPI {
 			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, response, false, toError(e.message));
 		}
 		let rolePayload: IRoleService.IgetRoleByNamePayload = { role };
-		let roleResponse: IRoleService.IgetRoleByNameResponse  = await this.proxy.role.getByName(rolePayload);
+		let roleResponse: IRoleService.IgetRoleByNameResponse = await this.proxy.role.getByName(rolePayload);
 
 		if (roleResponse.statusCode !== STATUS_CODES.OK) {
 			return roleResponse;
-		  }			
+		}
 		let user: IUSER;
 		try {
 			const hashPassword = await bcrypt.hash(password, 10);
@@ -82,7 +82,6 @@ export default class UserService implements IUserService.IUserServiceAPI {
 				role: roleResponse.data._id
 			};
 			user = await this.userStore.createUser(attributes);
-			console.log(user , "UUUUUUUUUUUUU")
 			return apiResponse(STATUS_CODES.OK, responseMessage.USER_CREATED, user, true, null)
 		} catch (e) {
 			console.error(e);
@@ -199,7 +198,7 @@ export default class UserService implements IUserService.IUserServiceAPI {
 
 	// loginUser
 	public loginUser = async (payload: IUserService.ILoginPayload) => {
-		const {email , password} = payload;
+		const { email, password } = payload;
 		const response: IUserService.ILoginResponse = {
 			statusCode: STATUS_CODES.UNKNOWN_CODE,
 			message: null,
@@ -209,17 +208,17 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		let user: IUSER;
 		try {
 			user = await this.userStore.getByEmail(payload.email);
-			if(!user){
-				return  apiResponse(STATUS_CODES.BAD_REQUEST, ErrorMessageEnum.USER_NOT_EXIST, null, false, toError(ErrorMessageEnum.USER_NOT_EXIST));
-			}	
+			if (!user) {
+				return apiResponse(STATUS_CODES.BAD_REQUEST, ErrorMessageEnum.USER_NOT_EXIST, null, false, toError(ErrorMessageEnum.USER_NOT_EXIST));
+			}
 			const isValid = await bcrypt.compare(password, user?.password);
 
 			//if isValid or user.password is null
 			if (!isValid || !user?.password) {
-			  const errorMsg = ErrorMessageEnum.INVALID_CREDENTIALS;
-			  response.statusCode = STATUS_CODES.UNAUTHORIZED;
-			  response.error = toError(errorMsg);
-			  return response;
+				const errorMsg = ErrorMessageEnum.INVALID_CREDENTIALS;
+				response.statusCode = STATUS_CODES.UNAUTHORIZED;
+				response.error = toError(errorMsg);
+				return response;
 			}
 			response.statusCode = STATUS_CODES.OK;
 			response.token = this.generateJWT(user);

@@ -12,8 +12,8 @@ export default class RoleStore {
 	 */
 	public async createRole(userInput: IROLE): Promise<IROLE> {
 		try {
-			const { role} = userInput;
-			let savedUser: IROLE = await RoleModel.create({role});
+			const { role } = userInput;
+			let savedUser: IROLE = await RoleModel.create({ role });
 			return savedUser;
 		} catch (error) {
 			return error;

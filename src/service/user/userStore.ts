@@ -14,13 +14,13 @@ export default class UserStore {
 	 */
 	public async createUser(userInput: IUSER): Promise<IUSER> {
 		try {
-			const {firstname , lastname , email , password , age, role} = userInput;
-			let savedUser: any = (await (await UserModel.create({firstname , lastname , email , password , age , roles: new mongoose.Types.ObjectId(role)})).populate('roles')).toJSON()
+			const { firstname, lastname, email, password, age, role } = userInput;
+			let savedUser: any = (await (await UserModel.create({ firstname, lastname, email, password, age, roles: new mongoose.Types.ObjectId(role) })).populate('roles')).toJSON()
 
-			console.log(savedUser , "SSSSSSSSS")
+			console.log(savedUser, "SSSSSSSSS")
 			return savedUser;
 		} catch (error) {
-			console.log(error,"errrr")
+			console.log(error, "errrr")
 			return error;
 		}
 	}
