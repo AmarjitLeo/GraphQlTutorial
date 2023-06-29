@@ -1,5 +1,6 @@
 import { User as IUSER } from "../../utils/interface/IUser";
 import { UserModel } from "../../db/users";
+import mongoose from 'mongoose';
 
 export default class UserStore {
 	public static OPERATION_UNSUCCESSFUL = class extends Error {
@@ -13,9 +14,13 @@ export default class UserStore {
 	 */
 	public async createUser(userInput: IUSER): Promise<IUSER> {
 		try {
-			let savedUser: any = await UserModel.create(userInput);
+			const {firstname , lastname , email , password , age, role} = userInput;
+			let savedUser: any = (await (await UserModel.create({firstname , lastname , email , password , age , roles: new mongoose.Types.ObjectId(role)})).populate('roles')).toJSON()
+
+			console.log(savedUser , "SSSSSSSSS")
 			return savedUser;
 		} catch (error) {
+			console.log(error,"errrr")
 			return error;
 		}
 	}

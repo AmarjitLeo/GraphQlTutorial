@@ -1,12 +1,13 @@
 import { gql } from "apollo-server-express"; //will create a schema
-const typeDefs = gql`
+const UserTypeDefs = gql`
   type User {
     _id: String!,
     firstname: String,
     lastname: String,
     email: String,
     password: String,
-    age: Int
+    age: Int,
+    roles: [Role]
   }
   type Login {
     token: String!
@@ -22,7 +23,8 @@ const typeDefs = gql`
     lastname: String,
     email: String,
     password: String,
-    age: Int
+    age: Int,
+    role: String,
   }
 
   input UserUpdateProps {
@@ -30,7 +32,8 @@ const typeDefs = gql`
     lastname: String,
     email: String,
     password: String,
-    age: Int
+    age: Int,
+    role: String,
   }
 
   type Mutation {
@@ -43,4 +46,4 @@ const typeDefs = gql`
   }
   `;
 
-export default typeDefs;
+export default UserTypeDefs;

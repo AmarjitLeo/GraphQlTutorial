@@ -4,6 +4,7 @@ import { User as IUSER } from "../../utils/interface/IUser";
 import STATUS_CODES from "../../utils/enum/statusCodes";
 import ErrorMessageEnum from "../../utils/enum/errorMessage";
 import responseMessage from "../../utils/enum/responseMessage";
+import * as IRoleService from "../role/IRoleService";
 import * as IUserService from "./IUserService";
 import { IAppServiceProxy } from "../appServiceProxy";
 import { toError } from "../../utils/interface/common";
@@ -41,14 +42,15 @@ export default class UserService implements IUserService.IUserServiceAPI {
 			lastname: Joi.string().required(),
 			email: Joi.string().email().required(),
 			password: Joi.string().required(),
-			age: Joi.number().required()
+			age: Joi.number().required(),
+			role: Joi.string().required(),
 		});
 		const params = schema.validate(payload);
 		if (params.error) {
 			console.error(params.error);
 			return apiResponse(STATUS_CODES.UNPROCESSABLE_ENTITY, ErrorMessageEnum.REQUEST_PARAMS_ERROR, response, false, params.error);
 		}
-		const { firstname, lastname, email, password, age } = payload;
+		const { firstname, lastname, email, password, age , role } = payload;
 
 		// Check if email is already registered
 		let existingUser: IUSER;
@@ -58,12 +60,16 @@ export default class UserService implements IUserService.IUserServiceAPI {
 			if (existingUser && existingUser?.email) {
 				return apiResponse(STATUS_CODES.BAD_REQUEST, ErrorMessageEnum.EMAIL_ALREADY_EXIST, response, false, toError(ErrorMessageEnum.EMAIL_ALREADY_EXIST));
 			}
-
 		} catch (e) {
 			console.error(e);
 			return apiResponse(STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR, response, false, toError(e.message));
 		}
+		let rolePayload: IRoleService.IgetRoleByNamePayload = { role };
+		let roleResponse: IRoleService.IgetRoleByNameResponse  = await this.proxy.role.getByName(rolePayload);
 
+		if (roleResponse.statusCode !== STATUS_CODES.OK) {
+			return roleResponse;
+		  }			
 		let user: IUSER;
 		try {
 			const hashPassword = await bcrypt.hash(password, 10);
@@ -72,9 +78,11 @@ export default class UserService implements IUserService.IUserServiceAPI {
 				lastname,
 				email: email.toLowerCase(),
 				password: hashPassword,
-				age
+				age,
+				role: roleResponse.data._id
 			};
 			user = await this.userStore.createUser(attributes);
+			console.log(user , "UUUUUUUUUUUUU")
 			return apiResponse(STATUS_CODES.OK, responseMessage.USER_CREATED, user, true, null)
 		} catch (e) {
 			console.error(e);
@@ -105,6 +113,9 @@ export default class UserService implements IUserService.IUserServiceAPI {
 			}
 			if (key === 'age') {
 				schemaPayload[key] = Joi.number().required()
+			}
+			if (key === 'role') {
+				schemaPayload[key] = Joi.string().required()
 			}
 		});
 

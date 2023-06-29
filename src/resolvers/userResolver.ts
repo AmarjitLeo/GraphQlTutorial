@@ -20,10 +20,10 @@ type UpdateUserPayload = {
   password?: string
 }
 
-const resolvers = {
+const userResolvers = {
   Query: {
     getAllUsers: async (_: any, args: any, contextValue: any) => {
-      let user: any = authenticate(contextValue.token)
+      // let user: any = authenticate(contextValue.token)
       let response: IUserService.IGetAllUserResponse;
       try {
         response = await proxy.user.getUsers()
@@ -33,8 +33,8 @@ const resolvers = {
       }
     },
     getUser: async (_: any, args: any, contextValue: any) => {
-      let user: any = authenticate(contextValue.token)
-      let response: IUserService.IGetAllUserResponse;
+      // let user: any = authenticate(contextValue.token)
+      let response: IUserService.IGetUserResponse;
       try {
         response = await proxy.user.getUser(args)
         return response.data;
@@ -45,7 +45,7 @@ const resolvers = {
   },
   Mutation: {
     async registerUser(parent: any, args: any, contextValue: any) {
-      let user: any = authenticate(contextValue.token)
+      // let user: any = authenticate(contextValue.token)
       const payload: IUserService.IRegisterUserPayload = args.data;
       let response: IUserService.IRegisterUserResponse;
       try {
@@ -62,7 +62,7 @@ const resolvers = {
       return response.data;
     },
     updateUser: async (_: any, args: any, contextValue: any) => {
-      let user: any = authenticate(contextValue.token)
+      // let user: any = authenticate(contextValue.token)
       const payload: UpdateUserPayload = args.data;
       let response: IUserService.IUpdateUserResponse;
       try {
@@ -80,7 +80,7 @@ const resolvers = {
       return response.data;
     },
     deleteUser: async (_: any, args: any, contextValue: any) => {
-      let user: any = authenticate(contextValue.token)
+      // let user: any = authenticate(contextValue.token)
       try {
         let payload: IUserService.IDeleteUserPayload = args;
         let response: IUserService.IDeleteUserResponse;
@@ -103,4 +103,4 @@ const resolvers = {
   }
 };
 
-export default resolvers;
+export default userResolvers;

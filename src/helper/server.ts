@@ -9,8 +9,8 @@ import routes from "../routes/index";
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import typeDefs from "../schema/userSchema";
-import resolvers from "../resolvers/userResolver";
+import typeDefs from "../schema";
+import resolvers from "../resolvers";
 import { json } from 'body-parser';
 import  { extractBearerToken } from "../utils/auth/userAuth"
 

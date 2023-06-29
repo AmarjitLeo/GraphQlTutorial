@@ -20,6 +20,7 @@ export interface IRegisterUserPayload {
 	email: string;
 	password: string;
 	age: number;
+	role: string;
 }
 
 
@@ -31,6 +32,7 @@ export interface IUpdateUserPayload {
 		email?: string;
 		password?: string;
 		age?: number;
+		role?: string;
 	}
 }
 
