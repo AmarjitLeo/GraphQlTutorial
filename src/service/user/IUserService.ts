@@ -32,7 +32,6 @@ export interface IUpdateUserPayload {
 	}
 }
 
-
 export interface IRegisterUserResponse extends IResponse {
 	user?: IUSER;
 }
@@ -63,7 +62,6 @@ export interface IGetUserResponse extends IResponse {
 	users?: IUSER;
 }
 
-
 export interface IDeleteUserPayload extends Request {
 	id: string
 }
@@ -75,7 +73,17 @@ export interface ILoginPayload {
 	email: string,
 	password: string
 }
+
 export interface ILoginResponse extends IResponse {
 	token?: string;
 	user?: IUSER;
+}
+
+export interface ILogsPayload {
+	oldData: [IUSER],
+	newData: [IUSER],
+}
+
+export interface ILogsResponse extends IResponse {
+	usersLogs?: [IUSER];
 }

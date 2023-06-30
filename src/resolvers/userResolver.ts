@@ -2,6 +2,8 @@ import proxy from "../service/appServiceProxy";
 import { ApolloError } from "apollo-server-express";
 import STATUS_CODES from "../utils/enum/statusCodes"
 import * as IUserService from "../service/user/IUserService"
+import ModelLogCreater from "../helper/modelLogCreater"
+
 import authenticate from "../utils/auth/userAuth"
 
 type User = {
@@ -94,12 +96,23 @@ const userResolvers = {
       try {
         let payload: IUserService.ILoginPayload = args;
         let response: IUserService.ILoginResponse;
-        response = await await proxy.user.loginUser(payload);
+        response = await proxy.user.loginUser(payload);
         return response.data
       } catch (e) {
         throw e;
       }
-    }
+    },
+    userLogs: async (_: any, args: any) => {
+      try {
+        let payload: IUserService.ILogsPayload = args;
+        let result: IUserService.ILogsResponse = ModelLogCreater(payload.oldData , payload.oldData, proxy.user.getUser )
+
+        return result;
+      } catch (e) {
+        throw e;
+      }
+    },
+
   }
 };
 

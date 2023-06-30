@@ -43,6 +43,7 @@ const UserTypeDefs = gql`
     updateUser(id: String,data: UserUpdateProps): User
     deleteUser(id: String): User
     loginUser(email: String,password: String): Login
+    userLogs([User],[User]): [User]
   }
   `;
 
