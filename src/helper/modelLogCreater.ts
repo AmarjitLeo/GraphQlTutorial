@@ -1,7 +1,7 @@
-export const logsCreater = (oldData: any, newData: any, ObjectSoFar: any, outputData: typeof oldData): any => {
-    if (JSON.stringify(oldData) === JSON.stringify(ObjectSoFar)) {
-        return;
-    }
+export const logsCreater = (oldData: any, newData: any, ObjectSoFar: any, outputData: typeof newData): any => {
+    // if (JSON.stringify(oldData) !== JSON.stringify(ObjectSoFar)) {
+    //     return;
+    // }
     if (Array.isArray(oldData)) {
         if (oldData.length === 0) {
             return;
@@ -9,26 +9,37 @@ export const logsCreater = (oldData: any, newData: any, ObjectSoFar: any, output
         newData.forEach((ele: any, index: number) => {
             if (typeof newData[index] === "object") {
                 logsCreater(oldData[index], newData[index], {}, newData[index])
-
             } else {
-                if (ele === oldData[index]) {
+                if (oldData.includes(ele)) {
                     outputData[index] = null;
                 }
             }
         })
     } else {
-        let keys = (Object.keys(oldData) as (keyof typeof oldData)[]);
+        let keys = (Object.keys(newData) as (keyof typeof newData)[]);
         if (keys.length === 0) {
             return;
         }
         for (let key of keys) {
             if (typeof newData[`${String(key)}`] === "object") {
-                // call
-                logsCreater(oldData[`${String(key)}`], newData[`${String(key)}`], {}, newData[`${String(key)}`])
-            } else {
-                // ObjectSoFar[`${String(key)}`] = oldData[`${String(key)}`];
+                if (oldData[`${String(key)}`]) {
+                    logsCreater(oldData[`${String(key)}`], newData[`${String(key)}`], {}, outputData[`${String(key)}`])
+                }
+            } else if(Array.isArray(newData[`${String(key)}`])){
+                newData.forEach((ele: any, index: any) => {
+                    if (oldData.includes(ele)) {
+                        outputData[index] = null;
+                    }
+                });
                 if (newData[`${String(key)}`] === oldData[`${String(key)}`]) {
                     outputData[`${String(key)}`] = null
+                }
+            }else{
+                if(oldData[`${String(key)}`]){
+                    if(oldData[`${String(key)}`] === newData[`${String(key)}`]){
+                        outputData[`${String(key)}`] = null;
+                    }
+                    
                 }
             }
         }
@@ -70,4 +81,4 @@ let b = {
 
 let result = logsCreater(a1, b1, {}, b1);
 
-console.log(result, "RRRRRRRRRR");
+console.log(b1, "RRRRRRRRRR");
