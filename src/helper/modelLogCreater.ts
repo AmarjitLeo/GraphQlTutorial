@@ -12,6 +12,7 @@ const logsCreater = (oldData: any, newData: any, ObjectSoFar: any, outputData: t
             } else {
                 if (oldData.includes(ele)) {
                     outputData[index] = null;
+                    oldData[index] = null;
                 }
             }
         })
@@ -25,27 +26,30 @@ const logsCreater = (oldData: any, newData: any, ObjectSoFar: any, outputData: t
                 if (oldData[`${String(key)}`]) {
                     logsCreater(oldData[`${String(key)}`], newData[`${String(key)}`], {}, outputData[`${String(key)}`])
                 }
-            } else if(Array.isArray(newData[`${String(key)}`])){
+            } else if (Array.isArray(newData[`${String(key)}`])) {
                 newData.forEach((ele: any, index: any) => {
                     if (oldData.includes(ele)) {
                         outputData[index] = null;
+                        oldData[index] = null;
                     }
                 });
                 if (newData[`${String(key)}`] === oldData[`${String(key)}`]) {
                     outputData[`${String(key)}`] = null
+                    oldData[`${String(key)}`] = null
                 }
-            }else{
-                if(oldData[`${String(key)}`] || oldData[`${String(key)}`] !== null ){
-                    if(oldData[`${String(key)}`] === newData[`${String(key)}`]){
+            } else {
+                if (oldData[`${String(key)}`] || oldData[`${String(key)}`] !== null) {
+                    if (oldData[`${String(key)}`] === newData[`${String(key)}`]) {
                         outputData[`${String(key)}`] = null;
+                        oldData[`${String(key)}`] = null;
                     }
-                    
+
                 }
             }
         }
     }
 }
- let a = {
+let a = {
     "basic": {
         "name_jp": "rew",
         "surname_jp": "fad",
@@ -572,54 +576,51 @@ let b = {
         }
     ]
 }
-  logsCreater(a,b,{},b)
+logsCreater(a, b, {}, b)
 
-  console.log(b , "RRRRRRRRRRRRRRRRRR")
+console.log(b, "RRRRRRRRRRRRRRRRRR")
 
-const createLoggerAns =  (logs: any,parentKey: any): any => {
-    let Obj:any = {};
+console.log(a, "LLLLOOOOOOOOGGGGGGG")
+
+const createLoggerAns = (logs: any, parentKey: any): any => {
+    let Obj: any = {};
     if (Array.isArray(logs)) {
-         if (logs.length === 0) {
+        if (logs.length === 0) {
             return {};
         }
         let ansObj: any = {};
         logs.forEach((ele: any, index: number) => {
             if (typeof logs[index] === "object" && Array.isArray(logs[index])) {
-
-                let smallAns:any = createLoggerAns(logs[index],null);
-                console.log(smallAns , "smallAns of obb33333")
+                let smallAns: any = createLoggerAns(logs[index], null);
                 ansObj[`${index}`] = smallAns;
-            } else if(typeof logs[index] === "object" && !Array.isArray(logs[index])){
-                let smallAns:any; 
-                smallAns = createLoggerAns(logs[index],null)
-                 let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
-                if(Okeys.length !==0){
-                  ansObj[`${index}`] = smallAns
-                  console.log(smallAns ,"smallAns of obj11111")
+            } else if (typeof logs[index] === "object" && !Array.isArray(logs[index])) {
+                let smallAns: any;
+                smallAns = createLoggerAns(logs[index], null)
+                let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
+                if (Okeys.length !== 0) {
+                    ansObj[`${index}`] = smallAns
                 }
-                
-                
             } else {
-                if(logs[index]!== null){
+                if (logs[index] !== null) {
                     ansObj[`${index}`] = logs[index];
                 }
             }
-            if(parentKey !== null){
-                Obj[`${parentKey}`] = ansObj   
-            }else{
-                Obj = ansObj   
-            }          
+            if (parentKey !== null) {
+                Obj[`${parentKey}`] = ansObj
+            } else {
+                Obj = ansObj
+            }
         })
-        
+
         return Obj;
     } else {
-        let Obj:any = {};
+        let Obj: any = {};
         let keys = (Object.keys(logs) as (keyof typeof logs)[]);
         if (keys.length === 0) {
             return {};
         }
-        keys.forEach((val:any , index:number) => {
-            if(logs[`${val}`] !== null){
+        keys.forEach((val: any, index: number) => {
+            if (logs[`${val}`] !== null) {
                 Obj[`${val}`] = "";
             }
         })
@@ -627,24 +628,19 @@ const createLoggerAns =  (logs: any,parentKey: any): any => {
             if (typeof logs[`${String(key)}`] === "object" && Array.isArray(logs[`${String(key)}`])) {
 
 
-                let smallAns:any = createLoggerAns(logs[`${String(key)}`] , null);
-                console.log(smallAns ,"smallAns of arr")
+                let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
                 Obj[`${String(key)}`] = smallAns
-            } else if(typeof logs[`${String(key)}`] === "object" && !Array.isArray(logs[`${String(key)}`]) && logs[`${String(key)}`] !== null){
-                
-                
-                let smallAns:any =  createLoggerAns(logs[`${String(key)}`] , null);
-
+            } else if (typeof logs[`${String(key)}`] === "object" && !Array.isArray(logs[`${String(key)}`]) && logs[`${String(key)}`] !== null) {
+                let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
                 let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
-                if(Okeys.length !==0){
-                  Obj[`${String(key)}`] = smallAns
-                  console.log(smallAns ,"smallAns of obj22222")
+                if (Okeys.length !== 0) {
+                    Obj[`${String(key)}`] = smallAns
                 }
-                
+
                 Obj[`${String(key)}`] = smallAns
-            }else{
-                if(logs[`${String(key)}`] !== null){ 
-                    Obj[`${String(key)}`] =  logs[`${String(key)}`];
+            } else {
+                if (logs[`${String(key)}`] !== null) {
+                    Obj[`${String(key)}`] = logs[`${String(key)}`];
                 }
             }
         }
@@ -654,6 +650,23 @@ const createLoggerAns =  (logs: any,parentKey: any): any => {
 
 
 let ans1 = createLoggerAns(b, "ans");
+let ans2 = createLoggerAns(a, "ans");
 
 
-console.log(ans1 , "OOOOOO")
+
+function deleteEmptyObjects(obj: any) {
+    for (var prop in obj) {
+        if (typeof obj[prop] === 'object') {
+            deleteEmptyObjects(obj[prop]); // Recursively check nested objects
+            if (Object.keys(obj[prop]).length === 0) {
+                delete obj[prop]; // Delete empty objects 
+            }
+        }
+    }
+}
+
+deleteEmptyObjects(ans1)
+deleteEmptyObjects(ans2)
+
+
+console.log([ans1, ans2], "OOOOOO")  // ans1 ====> newData ,  ans2====> oldData
