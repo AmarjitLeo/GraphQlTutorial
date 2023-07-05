@@ -49,6 +49,88 @@ const logsCreater = (oldData: any, newData: any, ObjectSoFar: any, outputData: t
         }
     }
 }
+
+const createLoggerAns = (logs: any, parentKey: any): any => {
+    let Obj: any = {};
+    if (Array.isArray(logs)) {
+        if (logs.length === 0) {
+            return {};
+        }
+        let ansObj: any = {};
+        logs.forEach((ele: any, index: number) => {
+            if (typeof logs[index] === "object" && Array.isArray(logs[index])) {
+                let smallAns: any = createLoggerAns(logs[index], null);
+                ansObj[`${index}`] = smallAns;
+            } else if (typeof logs[index] === "object" && !Array.isArray(logs[index])) {
+                let smallAns: any;
+                smallAns = createLoggerAns(logs[index], null)
+                let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
+                if (Okeys.length !== 0) {
+                    ansObj[`${index}`] = smallAns
+                }
+            } else {
+                if (logs[index] !== null) {
+                    ansObj[`${index}`] = logs[index];
+                }
+            }
+            if (parentKey !== null) {
+                Obj[`${parentKey}`] = ansObj
+            } else {
+                Obj = ansObj
+            }
+        })
+
+        return Obj;
+    } else {
+        let Obj: any = {};
+        let keys = (Object.keys(logs) as (keyof typeof logs)[]);
+        if (keys.length === 0) {
+            return {};
+        }
+        keys.forEach((val: any, index: number) => {
+            if (logs[`${val}`] !== null) {
+                Obj[`${val}`] = "";
+            }
+        })
+        for (let key of keys) {
+            if (typeof logs[`${String(key)}`] === "object" && Array.isArray(logs[`${String(key)}`])) {
+
+
+                let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
+                Obj[`${String(key)}`] = smallAns
+            } else if (typeof logs[`${String(key)}`] === "object" && !Array.isArray(logs[`${String(key)}`]) && logs[`${String(key)}`] !== null) {
+                let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
+                let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
+                if (Okeys.length !== 0) {
+                    Obj[`${String(key)}`] = smallAns
+                }
+
+                Obj[`${String(key)}`] = smallAns
+            } else {
+                if (logs[`${String(key)}`] !== null) {
+                    Obj[`${String(key)}`] = logs[`${String(key)}`];
+                }
+            }
+        }
+        return Obj;
+    }
+}
+
+
+function deleteEmptyObjects(obj: any) {
+    for (var prop in obj) {
+        if (typeof obj[prop] === 'object') {
+            deleteEmptyObjects(obj[prop]); // Recursively check nested objects
+            if (Object.keys(obj[prop]).length === 0) {
+                delete obj[prop]; // Delete empty objects 
+            }
+        }
+    }
+}
+
+
+
+// oldData to be input..
 let a = {
     "basic": {
         "name_jp": "rew",
@@ -313,6 +395,8 @@ let a = {
     ]
 }
 
+// newData to be input..
+
 let b = {
     "basic": {
         "name_jp": "rew",
@@ -576,97 +660,15 @@ let b = {
         }
     ]
 }
-logsCreater(a, b, {}, b)
 
-console.log(b, "RRRRRRRRRRRRRRRRRR")
-
-console.log(a, "LLLLOOOOOOOOGGGGGGG")
-
-const createLoggerAns = (logs: any, parentKey: any): any => {
-    let Obj: any = {};
-    if (Array.isArray(logs)) {
-        if (logs.length === 0) {
-            return {};
-        }
-        let ansObj: any = {};
-        logs.forEach((ele: any, index: number) => {
-            if (typeof logs[index] === "object" && Array.isArray(logs[index])) {
-                let smallAns: any = createLoggerAns(logs[index], null);
-                ansObj[`${index}`] = smallAns;
-            } else if (typeof logs[index] === "object" && !Array.isArray(logs[index])) {
-                let smallAns: any;
-                smallAns = createLoggerAns(logs[index], null)
-                let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
-                if (Okeys.length !== 0) {
-                    ansObj[`${index}`] = smallAns
-                }
-            } else {
-                if (logs[index] !== null) {
-                    ansObj[`${index}`] = logs[index];
-                }
-            }
-            if (parentKey !== null) {
-                Obj[`${parentKey}`] = ansObj
-            } else {
-                Obj = ansObj
-            }
-        })
-
-        return Obj;
-    } else {
-        let Obj: any = {};
-        let keys = (Object.keys(logs) as (keyof typeof logs)[]);
-        if (keys.length === 0) {
-            return {};
-        }
-        keys.forEach((val: any, index: number) => {
-            if (logs[`${val}`] !== null) {
-                Obj[`${val}`] = "";
-            }
-        })
-        for (let key of keys) {
-            if (typeof logs[`${String(key)}`] === "object" && Array.isArray(logs[`${String(key)}`])) {
+const  CompareLogs = (oldData:any , newData: any) => {
+    logsCreater(oldData , newData , {} , newData);
+    let newDataLog = createLoggerAns(newData, "ans");
+    let oldDataLog = createLoggerAns(oldData, "ans");
+    deleteEmptyObjects(newDataLog);
+    deleteEmptyObjects(oldDataLog);
+    return [newDataLog , oldDataLog];        
+} 
 
 
-                let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
-                Obj[`${String(key)}`] = smallAns
-            } else if (typeof logs[`${String(key)}`] === "object" && !Array.isArray(logs[`${String(key)}`]) && logs[`${String(key)}`] !== null) {
-                let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
-                let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
-                if (Okeys.length !== 0) {
-                    Obj[`${String(key)}`] = smallAns
-                }
-
-                Obj[`${String(key)}`] = smallAns
-            } else {
-                if (logs[`${String(key)}`] !== null) {
-                    Obj[`${String(key)}`] = logs[`${String(key)}`];
-                }
-            }
-        }
-        return Obj;
-    }
-}
-
-
-let ans1 = createLoggerAns(b, "ans");
-let ans2 = createLoggerAns(a, "ans");
-
-
-
-function deleteEmptyObjects(obj: any) {
-    for (var prop in obj) {
-        if (typeof obj[prop] === 'object') {
-            deleteEmptyObjects(obj[prop]); // Recursively check nested objects
-            if (Object.keys(obj[prop]).length === 0) {
-                delete obj[prop]; // Delete empty objects 
-            }
-        }
-    }
-}
-
-deleteEmptyObjects(ans1)
-deleteEmptyObjects(ans2)
-
-
-console.log([ans1, ans2], "OOOOOO")  // ans1 ====> newData ,  ans2====> oldData
+console.log(CompareLogs(a,b)); // ans1 ====> newData ,  ans2====> oldData
