@@ -50,6 +50,7 @@ const logsCreater = (oldData: any, newData: any, ObjectSoFar: any, outputData: t
     }
 }
 
+
 const createLoggerAns = (logs: any, parentKey: any): any => {
     let Obj: any = {};
     if (Array.isArray(logs)) {
@@ -58,10 +59,10 @@ const createLoggerAns = (logs: any, parentKey: any): any => {
         }
         let ansObj: any = {};
         logs.forEach((ele: any, index: number) => {
-            if (typeof logs[index] === "object" && Array.isArray(logs[index])) {
+            if (typeof logs[index] === "object" && logs[index] !== null && Array.isArray(logs[index])) {
                 let smallAns: any = createLoggerAns(logs[index], null);
                 ansObj[`${index}`] = smallAns;
-            } else if (typeof logs[index] === "object" && !Array.isArray(logs[index])) {
+            } else if (typeof logs[index] === "object" &&  logs[index] !== null && !Array.isArray(logs[index])) {
                 let smallAns: any;
                 smallAns = createLoggerAns(logs[index], null)
                 let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
@@ -93,12 +94,11 @@ const createLoggerAns = (logs: any, parentKey: any): any => {
             }
         })
         for (let key of keys) {
-            if (typeof logs[`${String(key)}`] === "object" && Array.isArray(logs[`${String(key)}`])) {
-
+            if (typeof logs[`${String(key)}`] === "object" && logs[`${String(key)}`] !== null  && Array.isArray(logs[`${String(key)}`])) {
 
                 let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
                 Obj[`${String(key)}`] = smallAns
-            } else if (typeof logs[`${String(key)}`] === "object" && !Array.isArray(logs[`${String(key)}`]) && logs[`${String(key)}`] !== null) {
+            } else if (typeof logs[`${String(key)}`] === "object" && logs[`${String(key)}`] !== null && !Array.isArray(logs[`${String(key)}`])) {
                 let smallAns: any = createLoggerAns(logs[`${String(key)}`], null);
                 let Okeys = (Object.keys(smallAns) as (keyof typeof smallAns)[]);
                 if (Okeys.length !== 0) {
@@ -115,7 +115,6 @@ const createLoggerAns = (logs: any, parentKey: any): any => {
         return Obj;
     }
 }
-
 
 function deleteEmptyObjects(obj: any) {
     for (var prop in obj) {
@@ -667,6 +666,10 @@ const  CompareLogs = (oldData:any , newData: any) => {
     let oldDataLog = createLoggerAns(oldData, "ans");
     deleteEmptyObjects(newDataLog);
     deleteEmptyObjects(oldDataLog);
+    if(newDataLog.ans && oldDataLog.ans){
+      newDataLog = newDataLog.ans
+      oldDataLog = oldDataLog.ans
+    }
     return [newDataLog , oldDataLog];        
 } 
 
